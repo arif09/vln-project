@@ -1,0 +1,2 @@
+method,description,run_dir,train_time_sec,trace_score_mean,trace_score_std,dtw_mean,fde_mean,penalty_mean,invalid_json,num_scored
+ia3_adapter,Adapter-style IA3 via PEFT,./llava_navitrace_runs/ia3_adapter,23187.169989824295,-58.325371329377646,67.97643285915012,4290.005849454347,432.315404965885,399.1086946568118,58,100

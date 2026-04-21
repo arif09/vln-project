@@ -1,0 +1,3 @@
+method,description,run_dir,train_time_sec,trace_score_mean,trace_score_std,dtw_mean,fde_mean,penalty_mean,invalid_json,num_scored
+bitfit,Bias-only fine-tuning (BitFit),./llava_navitrace_runs/bitfit,22414.9278864861,-68.3676164647055,76.6061068058734,4617.88553693067,358.33893642077,470.047000240615,52,100
+ia3_adapter,Adapter-style IA3 via PEFT,./llava_navitrace_runs/ia3_adapter,23187.1699898243,-58.3253713293776,67.9764328591501,4290.00584945435,432.315404965885,399.108694656812,58,100
