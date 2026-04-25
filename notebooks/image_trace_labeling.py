@@ -9,12 +9,38 @@ WINDOW_NAME = "Image Path Annotation"
 
 IMAGE_EXTENSIONS = ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tif", "*.tiff", "*.webp"]
 
-POINT_RADIUS = 10
-LINE_THICKNESS = 5
+POINT_RADIUS = 20
+LINE_THICKNESS = 10
+START_HEIGHT_RATIO = 0.95
 
 current_points = []
 current_image = None
 display_image = None
+
+
+def add_starting_point(image):
+    height, width = image.shape[:2]
+    return [(width // 2, int(height * START_HEIGHT_RATIO))]
+
+
+def get_display_point(point, image):
+    return (point[0], min(point[1], image.shape[0] - 1))
+
+
+def draw_points(image, points):
+    for idx, point in enumerate(points):
+        draw_point = get_display_point(point, image)
+        cv2.circle(image, draw_point, POINT_RADIUS, (0, 0, 255), -1)
+
+        if idx > 0:
+            previous_draw_point = get_display_point(points[idx - 1], image)
+            cv2.line(
+                image,
+                previous_draw_point,
+                draw_point,
+                (0, 255, 0),
+                LINE_THICKNESS
+            )
 
 
 def mouse_callback(event, x, y, flags, param):
@@ -23,13 +49,15 @@ def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         current_points.append((x, y))
 
-        cv2.circle(display_image, (x, y), POINT_RADIUS, (0, 0, 255), -1)
+        draw_point = get_display_point(current_points[-1], display_image)
+        cv2.circle(display_image, draw_point, POINT_RADIUS, (0, 0, 255), -1)
 
         if len(current_points) > 1:
+            previous_draw_point = get_display_point(current_points[-2], display_image)
             cv2.line(
                 display_image,
-                current_points[-2],
-                current_points[-1],
+                previous_draw_point,
+                draw_point,
                 (0, 255, 0),
                 LINE_THICKNESS
             )
@@ -66,10 +94,11 @@ def annotate_images(image_folder, output_csv):
         return
 
     print("Instructions:")
+    print(" - A starting point is automatically added at (image_width / 2, 95% image_height)")
     print(" - Left click to add path points")
     print(" - Press Enter to save current image annotations and move to next image")
     print(" - After pressing Enter, type a text prompt in the terminal")
-    print(" - Press 'r' to reset points for current image")
+    print(" - Press 'r' to reset points for current image back to the starting point")
     print(" - Press 'q' or Esc to quit early")
     print()
 
@@ -78,14 +107,14 @@ def annotate_images(image_folder, output_csv):
     cv2.setMouseCallback(WINDOW_NAME, mouse_callback)
 
     for image_path in image_files:
-        current_points = []
-
         current_image = cv2.imread(image_path)
         if current_image is None:
             print(f"Warning: Could not load image: {image_path}")
             continue
 
         display_image = current_image.copy()
+        current_points = add_starting_point(current_image)
+        draw_points(display_image, current_points)
         image_name = os.path.basename(image_path)
 
         while True:
@@ -103,9 +132,10 @@ def annotate_images(image_folder, output_csv):
                 break
 
             elif key == ord('r'):
-                current_points = []
                 display_image = current_image.copy()
-                print(f"Reset points for {image_name}")
+                current_points = add_starting_point(current_image)
+                draw_points(display_image, current_points)
+                print(f"Reset points for {image_name} back to starting point")
 
             elif key == ord('q') or key == 27:
                 print("Exiting early.")
