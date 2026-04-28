@@ -3,7 +3,7 @@ import csv
 import glob
 import cv2
 
-IMAGE_FOLDER = "test_set/"
+IMAGE_FOLDER = "/test_img"
 OUTPUT_CSV = "annotated_paths.csv"
 WINDOW_NAME = "Image Path Annotation"
 
@@ -103,7 +103,7 @@ def annotate_images(image_folder, output_csv):
     print()
 
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(WINDOW_NAME, 1200, 800)
+    cv2.resizeWindow(WINDOW_NAME, 1200, 800)    
     cv2.setMouseCallback(WINDOW_NAME, mouse_callback)
 
     for image_path in image_files:
@@ -116,6 +116,7 @@ def annotate_images(image_folder, output_csv):
         current_points = add_starting_point(current_image)
         draw_points(display_image, current_points)
         image_name = os.path.basename(image_path)
+
 
         while True:
             cv2.imshow(WINDOW_NAME, display_image)
