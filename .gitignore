@@ -2,3 +2,4 @@
 *.pkl
 *.codex
 */__pycache__/
+/llava_results/
